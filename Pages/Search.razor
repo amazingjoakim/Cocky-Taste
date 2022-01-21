@@ -1,0 +1,44 @@
+﻿@page "/search"
+@inject NavigationManager nav
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3">
+            <select class="form-control" id="sel1"  @onchange="newvalue" >
+                <option>Select option</option>
+                <option>Username</option>
+                <option>Drink Name</option>
+
+            </select>
+        </div>
+        <div class="col-6"><input type="text" class="form-control" id="usr"  @bind="Keyword"/></div>
+        <div class="col-2"><input type="button" class="btn bg-warning" value="Search" @onclick="Find" /></div>
+    </div>
+</div>
+
+@code {
+
+    public string Keyword { get; set; }
+    public string selection { get; set; }
+
+    public void Find()
+    {
+
+        Console.WriteLine(Keyword + " " + selection);
+        nav.NavigateTo("/found/" + selection + "/" + Keyword);
+    }
+
+    protected void newvalue(ChangeEventArgs e)
+    {
+        if (e.Value.ToString() == "Username")
+        {
+            selection = "user";
+        }
+        else if (e.Value.ToString() == "Drink Name")
+        {
+            selection = "title";
+        }
+
+
+    }
+}

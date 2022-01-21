@@ -1,0 +1,69 @@
+﻿@using cocky;
+@using cocky.Models;
+@page "/found/{selection}/{keyword}"
+@inject ICocktailData _db
+<div class="container-fluid">
+    @if (drinks == null)
+    {
+        <h3>Loading...</h3>
+    }
+    else
+    {
+        foreach (CocktailModel drink in drinks)
+        {
+            <div class="row mt-5">
+                <div class="col-4 offset-1">
+                    <h2>@drink.title</h2>
+                </div>
+            </div>
+            <div class="row mt-1 mb-3">
+                <div class="col-4 offset-1">
+                    <h3>@drink.glass</h3>
+                </div>
+            </div>
+            <div class="row mt-3" style="height:15em;">
+                <div class="col-4 offset-1 bg-light border border-dark rounded"  style="height:100%;">
+                    <ul class="list-group list-group-flush p-3">
+
+                        @for (int i = 0; i < drink.ingredients.Count; i++)
+                        {
+                            string output = drink.measurements[i] + " " + drink.ingredients[i];
+                            <li class="list-group-flush">
+                                <label>@output</label>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+                <div class="col-5 offset-1 border border-dark rounded bg-light" style="height:100%;">
+                    <label style="height:100%; width:100%;">@drink.instructions</label>
+                </div>
+            </div>
+            <div class="row mb-5 mt-2">
+                <div class="col-4 offset-1">
+                    <label class="border-top border-dark">@drink.user</label>
+                </div>
+                <div class="col-2 offset-4" style="text-align:right">
+                    <label class="border-top border-dark">Latest Edit Date</label>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public string keyword { get; set; }
+    [Parameter] public string selection { get; set; }
+
+    List<CocktailModel> drinks = null;
+
+    protected override void OnInitialized()
+    {
+        drinks = new();
+        //dkirns = await _db.GetCocktail(selection, keyword);
+        drinks = _db.GetCocktails(selection,keyword);
+        Console.WriteLine("IT WORKED");
+        
+
+    }
+}

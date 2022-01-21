@@ -1,0 +1,115 @@
+﻿@using cocky;
+@using cocky.Models;
+@using Newtonsoft.Json;
+
+@page "/new"
+@inject ICocktailData _db
+<h3>Create New Recipe</h3>
+
+<EditForm Model="@NewCocktail" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label>Title</label>
+    <InputText id="usr" class="form-control mb-1 col-4 bg-light border border-dark border-5" DisplayName="Title" @bind-Value="NewCocktail.Title" />
+    <label>Glass type</label>
+    <InputText id="usr" class="form-control col-3 mb-5 border bg-light border-dark border-5" DisplayName="Glass type" @bind-Value="NewCocktail.glass" />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-1 "></div>
+            <div class="col-3 "><h4>Measurement</h4></div>
+            <div class="col-3 "><h4>Ingredient</h4></div>
+            <div class="col-5 "></div>
+        </div>
+        <div class="row">
+            <div class="col-1 "><input type="button" class="btn btn-primary mt-2 mb-2" @onclick="add" value="     ADD   " style="margin-left:0; padding-left:0;" /></div>
+            <div class="col-3 "><input type="text" class="form-control bg-light border-dark mt-2 mb-2" id="usr" @bind="mea" /></div>
+            <div class="col-3 "><input type="text" class="form-control bg-light border-dark mt-2 mb-2" id="usr" @bind="ing" /></div>
+            <div class="col-5 "><h4>Instruction</h4></div>
+        </div>
+        <div class="row">
+            <div class="col-1 "></div>
+            <div class="col-3">
+                <ul class="list-group mt-2">
+                    @if (NewCocktail.Measurements.Count != 0)
+                    {
+                        foreach (string measure in NewCocktail.Measurements)
+                        {
+                            <li class="list-group-item">@measure</li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="col-3 ">
+                <ul class="list-group mt-2">
+                    @if (NewCocktail.Measurements.Count != 0)
+                    {
+                        foreach (string ingredient in NewCocktail.Ingredients)
+                        {
+                            <li class="list-group-item">@ingredient</li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="col-5 ">
+                <InputTextArea DisplayName="Instructions" id="comment" class="form-control bg-light border-dark mt-2" style="resize: none; height: 15em;" @bind-Value="NewCocktail.Instructions" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-warning">Submit</button>
+    </div>
+    @if (ShowWindow)
+    {
+        <ModalDialog OnOk="CloseWindow"></ModalDialog>
+    }
+
+
+
+</EditForm>
+
+
+@code{
+    Cocktaildisplay NewCocktail = new();
+    private string ing { get; set; }
+    private string mea { get; set; }
+
+    public bool ShowWindow { get; set; }
+
+    protected override void OnInitialized()
+    {
+        NewCocktail.Creator = "Admin Joakim";
+    }
+
+    private void CloseWindow(bool accept)
+    {
+        ShowWindow = false;
+        StateHasChanged();
+    }
+
+    private async Task Submit()
+    {
+        CocktailModel C = new();
+        C.title = NewCocktail.Title;
+        C.instructions = NewCocktail.Instructions;
+        C.user = NewCocktail.Creator;
+        C.ingredients = NewCocktail.Ingredients;
+        C.measurements = NewCocktail.Measurements;
+        C.glass = NewCocktail.glass;
+        await _db.InsertCocktail(C);
+
+        Console.WriteLine("cocktail ADDED");
+        ShowWindow = true;
+
+
+        NewCocktail = new();
+        StateHasChanged();
+    }
+
+    private void add(MouseEventArgs args)
+    {
+
+        NewCocktail.Measurements.Add(mea);
+        NewCocktail.Ingredients.Add(ing);
+
+        mea = "";
+        ing = "";
+    }
+}

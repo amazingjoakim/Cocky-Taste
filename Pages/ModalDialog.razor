@@ -1,0 +1,22 @@
+﻿<div class="modal fade show" id="myModal" role="dialog" style="display:block;background-color:rgba(10,10,10,.8)">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align:center;">
+                <h3>Recipe Has Been Added</h3>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-outline-warning" value="OK" style="width:100%;" @onclick="Cancel"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnOk { get; set; }
+
+    private Task Cancel()
+    {
+        return OnOk.InvokeAsync(false);
+    }
+}
